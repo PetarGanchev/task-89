@@ -8,20 +8,50 @@ export default class Application extends EventEmitter {
     };
   }
 
+  _loading = document.querySelector(".progress");
+  _startLoading() {
+    this._loading.style.visibility = "visible";
+  }
+  _stopLoading() {
+    this._loading.style.visibility = "hidden";
+  }
+
   constructor() {
     super();
 
-    const box = document.createElement("div");
-    box.classList.add("box");
-    box.innerHTML = this._render({
-      name: "Placeholder",
-      terrain: "placeholder",
-      population: 0,
+    this._load();
+    this.emit(Application.events.READY);
+  }
+
+  async _load() {
+    this._startLoading();
+    let pageNumber = 1;
+
+    // Fetch planets
+    let planets = [];
+    let response;
+    let data;
+    do {
+      response = await fetch("https://swapi.boom.dev/api/planets?page=" + pageNumber);
+      data = await response.json();
+      planets = planets.concat(data.results);
+      pageNumber++;
+    } while (data.next);
+
+    // Render planets
+    planets.forEach((planet) => {
+      this._create(planet);
     });
 
-    document.body.querySelector(".main").appendChild(box);
+    this._stopLoading();
+  }
 
-    this.emit(Application.events.READY);
+  _create(planet) {
+    const box = document.createElement("div");
+    box.classList.add("box");
+    box.innerHTML = this._render(planet);
+
+    document.body.querySelector(".main").appendChild(box);
   }
 
   _render({ name, terrain, population }) {
@@ -44,4 +74,4 @@ export default class Application extends EventEmitter {
 </article>
     `;
   }
-}
+ }
