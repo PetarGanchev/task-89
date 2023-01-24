@@ -10,15 +10,16 @@ export default class Application extends EventEmitter {
 
   _loading = document.querySelector(".progress");
   _startLoading() {
-    this._loading.style.visibility = "visible";
+    this._loading.style.visibility = "none";
+    console.log("  _startLoading  ")
   }
   _stopLoading() {
     this._loading.style.visibility = "hidden";
+    console.log("STOP")
   }
 
   constructor() {
     super();
-
     this._load();
     this.emit(Application.events.READY);
   }
@@ -35,6 +36,7 @@ export default class Application extends EventEmitter {
       response = await fetch("https://swapi.boom.dev/api/planets?page=" + pageNumber);
       data = await response.json();
       planets = planets.concat(data.results);
+      console.log(planets)
       pageNumber++;
     } while (data.next);
 
@@ -54,7 +56,7 @@ export default class Application extends EventEmitter {
     document.body.querySelector(".main").appendChild(box);
   }
 
-  _render({ name, terrain, population }) {
+  _render({ name, terrain, population, url }) {
     return `
 <article class="media">
   <div class="media-left">
@@ -69,6 +71,7 @@ export default class Application extends EventEmitter {
         <span class="tag">${terrain}</span> <span class="tag">${population}</span>
         <br>
       </p>
+      <p class="tag">url:<a href="${url}" target="_blank">${url}</a></p>
     </div>
   </div>
 </article>
