@@ -10,11 +10,10 @@ export default class Application extends EventEmitter {
 
   _loading = document.querySelector(".progress");
   _startLoading() {
-    this._loading.style.visibility = "none";
-    console.log("  _startLoading  ")
+    this._loading.style.visibility = "visible";
   }
   _stopLoading() {
-    this._loading.style.visibility = "hidden";
+    this._loading.style.display = "none";
     console.log("STOP")
   }
 
@@ -33,7 +32,11 @@ export default class Application extends EventEmitter {
     let response;
     let data;
     do {
-      response = await fetch("https://swapi.boom.dev/api/planets?page=" + pageNumber);
+      if (pageNumber == 1) {
+        response = await fetch("https://swapi.boom.dev/api/planets");
+      } else {
+        response = await fetch("https://swapi.boom.dev/api/planets?page=" + pageNumber);
+      }
       data = await response.json();
       planets = planets.concat(data.results);
       console.log(planets)
